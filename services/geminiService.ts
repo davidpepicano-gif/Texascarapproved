@@ -2,10 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Car } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const generateDescription = async (car: Partial<Car>): Promise<string> => {
   try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Crea una descripción de ventas profesional para Texas Cars Approved en ESPAÑOL:
@@ -23,25 +22,14 @@ export const generateDescription = async (car: Partial<Car>): Promise<string> =>
     return response.text?.trim() || "Este vehículo pertenece a nuestro Inventario Certificado Approved. Listo para entrega inmediata en nuestras sedes de Texas.";
   } catch (error) {
     console.error("Error generating description:", error);
-    return "Error al generar la descripción con IA.";
-  }
-};
-
-export const generateFleetSummary = async (cars: Car[]): Promise<string> => {
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: `Escribe un mensaje corto de bienvenida en ESPAÑOL para el catálogo de Texas Cars Approved. Menciona nuestro "Inventario Certificado Approved" disponible en Houston y Dallas. Usa emojis de la bandera de Texas y estrellas.`,
-    });
-    return response.text?.trim() || "¡Bienvenidos a Texas Cars Approved! Descubre nuestro Inventario Certificado Approved en Houston y Dallas.";
-  } catch (error) {
-    return "Selección exclusiva de Inventario Certificado Approved en Texas.";
+    return "Este vehículo pertenece a nuestro Inventario Certificado Approved. Listo para entrega inmediata.";
   }
 };
 
 export const generateCarImage = async (car: Partial<Car>): Promise<string> => {
   try {
-    const prompt = `Professional dealership photography of a ${car.make} ${car.model} ${car.year}. High-end commercial look, bright lighting, Texas dealership style background.`;
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const prompt = `Professional high-end dealership photography of a ${car.make} ${car.model} ${car.year}. Clean studio lighting, 4k, realistic car commercial style.`;
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: { parts: [{ text: prompt }] },
@@ -53,9 +41,10 @@ export const generateCarImage = async (car: Partial<Car>): Promise<string> => {
         return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
       }
     }
-    throw new Error("No se encontraron datos de imagen.");
+    throw new Error("No image data found");
   } catch (error) {
     console.error("Error generating car image:", error);
-    throw error;
+    // Fallback image en caso de error de IA
+    return "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1200";
   }
 };

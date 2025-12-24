@@ -14,6 +14,8 @@
         .approved-gradient {
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%);
         }
+        /* Prevención de destellos blancos durante la carga */
+        body { background-color: #020617; }
     </style>
 <script type="importmap">
 {
@@ -29,5 +31,7 @@
 </head>
 <body class="bg-slate-950 text-slate-50 min-h-screen">
     <div id="root"></div>
+    <!-- CRÍTICO: Referencia al script principal para el deployment -->
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
