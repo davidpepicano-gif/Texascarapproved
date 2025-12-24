@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Plus, Trash2, Edit3, Sparkles, 
@@ -128,6 +127,17 @@ const App: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const handleDeleteCar = (id: string) => {
+    if (window.confirm('¿Estás seguro de eliminar este vehículo del inventario?')) {
+      setCars(cars.filter(c => c.id !== id));
+    }
+  };
+
+  const handleEditCar = (car: Car) => {
+    setFormData(car);
+    setIsModalOpen(true);
+  };
+
   const handleAIGenerateImage = async () => {
     if (!formData.make || !formData.model) return alert("Ingresa marca y modelo.");
     setIsGeneratingImg(true);
@@ -224,7 +234,20 @@ const App: React.FC = () => {
             {/* GRID CARDS */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
               {filteredCars.map(car => (
-                <div key={car.id} className="group bg-slate-900 rounded-[2.5rem] overflow-hidden border border-slate-800 hover:border-blue-500/40 transition-all flex flex-col shadow-xl hover:shadow-blue-500/5">
+                <div key={car.id} className="group bg-slate-900 rounded-[2.5rem] overflow-hidden border border-slate-800 hover:border-blue-500/40 transition-all flex flex-col shadow-xl hover:shadow-blue-500/5 relative">
+                  
+                  {/* ADMIN CONTROLS */}
+                  {!isClientMode && (
+                    <div className="absolute top-4 right-4 z-30 flex gap-2">
+                       <button onClick={(e) => { e.stopPropagation(); handleEditCar(car); }} className="bg-white/10 hover:bg-white/20 backdrop-blur-md p-2 rounded-xl text-white border border-white/10 shadow-lg transition-all hover:scale-110">
+                         <Edit3 className="w-4 h-4" />
+                       </button>
+                       <button onClick={(e) => { e.stopPropagation(); handleDeleteCar(car.id); }} className="bg-red-600/80 hover:bg-red-600 p-2 rounded-xl text-white backdrop-blur-md border border-red-500/20 shadow-lg transition-all hover:scale-110">
+                         <Trash2 className="w-4 h-4" />
+                       </button>
+                    </div>
+                  )}
+
                   <div className="relative h-72 overflow-hidden">
                     <img src={car.imageUrls[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={car.model} />
                     <div className="absolute top-5 left-5">
@@ -489,7 +512,9 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button onClick={handleSaveCar} className="w-full py-8 bg-blue-600 hover:bg-blue-500 text-white rounded-3xl font-black uppercase tracking-widest transition-all">Publicar en el Catálogo</button>
+            <button onClick={handleSaveCar} className="w-full py-8 bg-blue-600 hover:bg-blue-500 text-white rounded-3xl font-black uppercase tracking-widest transition-all">
+              {formData.id ? 'Actualizar Vehículo' : 'Publicar en el Catálogo'}
+            </button>
           </div>
           <input type="file" ref={fileInputRef} className="hidden" multiple onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             const filesList = e.target.files;
