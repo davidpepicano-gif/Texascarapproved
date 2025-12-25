@@ -4,7 +4,7 @@ import {
   ChevronLeft, ChevronRight, Activity, Fuel, Loader2, 
   Zap, MessageCircle, DollarSign, MapPin, 
   CheckCircle2, ShieldCheck, Star, 
-  ArrowRight, X, Image as ImageIcon, Calendar, Camera
+  ArrowRight, X, Image as ImageIcon
 } from 'lucide-react';
 import { Car, ViewType, CarType, LocationType } from './types';
 import { generateCarImage } from './services/geminiService';
