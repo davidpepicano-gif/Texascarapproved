@@ -1,10 +1,22 @@
 import { GoogleGenAI } from "@google/genai";
 import { Car } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to initialize AI only when needed to prevent runtime crashes
+const getAI = () => {
+  // @ts-ignore - process.env.API_KEY is replaced by Vite at build time
+  const apiKey = process.env.API_KEY; 
+  if (!apiKey) {
+    console.warn("Gemini API Key is missing. AI features will be disabled.");
+    return null;
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export const generateDescription = async (car: Partial<Car>): Promise<string> => {
   try {
+    const ai = getAI();
+    if (!ai) return "Descripción no disponible (Falta API Key).";
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Crea una descripción de ventas profesional para Texas Cars Approved en ESPAÑOL:
@@ -28,6 +40,9 @@ export const generateDescription = async (car: Partial<Car>): Promise<string> =>
 
 export const generateFleetSummary = async (_cars: Car[]): Promise<string> => {
   try {
+    const ai = getAI();
+    if (!ai) return "Bienvenido a Texas Cars Approved.";
+
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Escribe un mensaje corto de bienvenida en ESPAÑOL para el catálogo de Texas Cars Approved. Menciona nuestro "Inventario Certificado Approved" disponible en Houston y Dallas. Usa emojis de la bandera de Texas y estrellas.`,
@@ -40,6 +55,9 @@ export const generateFleetSummary = async (_cars: Car[]): Promise<string> => {
 
 export const generateCarImage = async (car: Partial<Car>): Promise<string> => {
   try {
+    const ai = getAI();
+    if (!ai) throw new Error("API Key missing");
+
     const prompt = `Professional dealership photography of a ${car.make} ${car.model} ${car.year}. High-end commercial look, bright lighting, Texas dealership style background.`;
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
